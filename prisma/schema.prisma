@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// import {Prisma-client} from '@prisma/client'
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id BigInt @id @default(autoincrement()) 
+  firstName String
+  middleName String
+  lastName String
+  mobile String
+  email String @unique
+  password String
+  resisteredAt DateTime @default(now())
+  lastLogin DateTime @default(now())
+  intro String @db.TinyText
+  profile String @db.Text
+  post Post[]
+}
+
+model Post {
+  id  BigInt  @id @default(autoincrement())
+  text String
+  userID BigInt
+  User User @relation(fields: [userID],references: [id],onDelete: Restrict,onUpdate:Cascade)
+  Post_Comment Post_Comment[]
+  Post_tag Post_tag[]
+  Post_category Post_category[]
+  Post_meta Post_meta[]
+
+}
+
+
+
+model Post_Comment {
+  id  BigInt  @id @default(autoincrement())
+  title String
+  description String @db.LongText
+  postID BigInt
+  Post Post @relation(fields: [postID],references: [id],onDelete: Restrict,onUpdate:Cascade)
+}
+ model Post_tag {
+  id  BigInt  @id @default(autoincrement())
+  tagID BigInt
+  postID BigInt
+  Post Post @relation(fields: [postID],references: [id],onDelete: Restrict,onUpdate:Cascade)
+  Tag Tag @relation(fields: [tagID],references: [id],onDelete: Restrict,onUpdate:Cascade)
+ }
+
+ model Post_category {
+  id  BigInt  @id @default(autoincrement())
+  categoryID BigInt
+  Category Category @relation(fields: [categoryID],references: [id],onDelete: Restrict,onUpdate:Cascade)
+  postID BigInt
+  Post Post @relation(fields: [postID],references: [id],onDelete: Restrict,onUpdate:Cascade)
+
+ }
+  model Post_meta {
+  id  BigInt  @id @default(autoincrement())
+  key String
+  content String @db.Text
+  postID BigInt
+  Post Post @relation(fields: [postID],references: [id],onDelete: Restrict,onUpdate:Cascade)
+  }
+
+model Tag {
+  id  BigInt  @id @default(autoincrement())
+  name String
+  description String @db.Text
+  Post_tag Post_tag[]
+}
+
+model Category {
+  id  BigInt  @id @default(autoincrement())
+  name String
+  description String @db.Text
+  Post_category Post_category[]
+}
+
+
+
+
+
+
+
+
+
